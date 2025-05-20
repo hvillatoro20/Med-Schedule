@@ -1,0 +1,1071 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MediSchedule - Gestión de Citas Médicas</title>
+    <style>
+        :root {
+            --color-primario: #2b6cb0;
+            --color-secundario: #4299e1;
+            --color-exito: #38a169;
+            --color-peligro: #e53e3e;
+            --color-advertencia: #dd6b20;
+            --color-fondo: #f7fafc;
+            --color-texto: #2d3748;
+            --color-borde: #e2e8f0;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: var(--color-texto);
+            background-color: var(--color-fondo);
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        header {
+            background-color: var(--color-primario);
+            color: white;
+            padding: 20px 0;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .header-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-size: 1.5rem;
+            font-weight: bold;
+        }
+
+        nav ul {
+            display: flex;
+            list-style: none;
+        }
+
+        nav ul li {
+            margin-left: 20px;
+        }
+
+        nav ul li a {
+            color: white;
+            text-decoration: none;
+            font-weight: 500;
+            transition: opacity 0.3s;
+        }
+
+        nav ul li a:hover {
+            opacity: 0.8;
+        }
+
+        main {
+            padding: 40px 0;
+            min-height: calc(100vh - 150px);
+        }
+
+        .section-title {
+            font-size: 1.8rem;
+            margin-bottom: 20px;
+            color: var(--color-primario);
+            border-bottom: 2px solid var(--color-borde);
+            padding-bottom: 10px;
+        }
+
+        .card {
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+            margin-bottom: 30px;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 600;
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid var(--color-borde);
+            border-radius: 4px;
+            font-size: 1rem;
+        }
+
+        .btn {
+            display: inline-block;
+            padding: 10px 20px;
+            background-color: var(--color-primario);
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: 600;
+            transition: background-color 0.3s;
+        }
+
+        .btn:hover {
+            background-color: var(--color-secundario);
+        }
+
+        .btn-success {
+            background-color: var(--color-exito);
+        }
+
+        .btn-danger {
+            background-color: var(--color-peligro);
+        }
+
+        .btn-warning {
+            background-color: var(--color-advertencia);
+        }
+
+        .table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+
+        .table th, .table td {
+            padding: 12px 15px;
+            text-align: left;
+            border-bottom: 1px solid var(--color-borde);
+        }
+
+        .table th {
+            background-color: var(--color-primario);
+            color: white;
+            font-weight: 600;
+        }
+
+        .table tr:nth-child(even) {
+            background-color: rgba(0, 0, 0, 0.02);
+        }
+
+        .table tr:hover {
+            background-color: rgba(0, 0, 0, 0.05);
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 4px 8px;
+            border-radius: 12px;
+            font-size: 0.8rem;
+            font-weight: 600;
+        }
+
+        .badge-success {
+            background-color: rgba(56, 161, 105, 0.1);
+            color: var(--color-exito);
+        }
+
+        .badge-warning {
+            background-color: rgba(221, 107, 32, 0.1);
+            color: var(--color-advertencia);
+        }
+
+        .badge-danger {
+            background-color: rgba(229, 62, 62, 0.1);
+            color: var(--color-peligro);
+        }
+
+        .tabs {
+            display: flex;
+            border-bottom: 1px solid var(--color-borde);
+            margin-bottom: 20px;
+        }
+
+        .tab {
+            padding: 10px 20px;
+            cursor: pointer;
+            border-bottom: 2px solid transparent;
+        }
+
+        .tab.active {
+            border-bottom: 2px solid var(--color-primario);
+            font-weight: 600;
+            color: var(--color-primario);
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        .calendar {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 10px;
+        }
+
+        .calendar-header {
+            font-weight: 600;
+            text-align: center;
+            padding: 10px;
+            background-color: var(--color-primario);
+            color: white;
+        }
+
+        .calendar-day {
+            min-height: 100px;
+            border: 1px solid var(--color-borde);
+            padding: 5px;
+        }
+
+        .calendar-day-number {
+            font-weight: 600;
+            margin-bottom: 5px;
+        }
+
+        .appointment {
+            background-color: var(--color-secundario);
+            color: white;
+            padding: 5px;
+            margin-bottom: 5px;
+            border-radius: 4px;
+            font-size: 0.8rem;
+            cursor: pointer;
+        }
+
+        .search-container {
+            margin-bottom: 20px;
+        }
+
+        .search-input {
+            width: 100%;
+            max-width: 400px;
+            padding: 10px;
+            border: 1px solid var(--color-borde);
+            border-radius: 4px;
+        }
+
+        footer {
+            background-color: var(--color-primario);
+            color: white;
+            text-align: center;
+            padding: 20px 0;
+            margin-top: 40px;
+        }
+
+        @media (max-width: 768px) {
+            .header-container {
+                flex-direction: column;
+                text-align: center;
+            }
+
+            nav ul {
+                margin-top: 15px;
+                justify-content: center;
+            }
+
+            nav ul li {
+                margin: 0 10px;
+            }
+
+            .calendar {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="container header-container">
+            <div class="logo">MediSchedule</div>
+            <nav>
+                <ul>
+                    <li><a href="#" data-tab="doctores">Doctores</a></li>
+                    <li><a href="#" data-tab="citas">Citas</a></li>
+                    <li><a href="#" data-tab="calendario">Calendario</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <main>
+        <div class="container">
+            <section id="doctores" class="tab-content active">
+                <h2 class="section-title">Gestión de Doctores</h2>
+                
+                <div class="card">
+                    <h3>Agregar Nuevo Doctor</h3>
+                    <form id="form-doctor">
+                        <div class="form-group">
+                            <label for="doctor-nombre">Nombre Completo</label>
+                            <input type="text" id="doctor-nombre" class="form-control" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="doctor-especialidad">Especialidad</label>
+                            <input type="text" id="doctor-especialidad" class="form-control" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Horario de Trabajo</label>
+                            <div id="horarios-container">
+                                <!-- Horarios dinámicos se agregarán aquí -->
+                            </div>
+                            <button type="button" id="btn-agregar-horario" class="btn">Agregar Horario</button>
+                        </div>
+                        <button type="submit" class="btn btn-success">Guardar Doctor</button>
+                    </form>
+                </div>
+
+                <div class="card">
+                    <h3>Listado de Doctores</h3>
+                    <div class="search-container">
+                        <input type="text" id="search-doctor" class="search-input" placeholder="Buscar doctor...">
+                    </div>
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Nombre</th>
+                                <th>Especialidad</th>
+                                <th>Horario</th>
+                                <th>Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tabla-doctores">
+                            <!-- Datos de doctores se cargarán aquí -->
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
+            <section id="citas" class="tab-content">
+                <h2 class="section-title">Gestión de Citas</h2>
+                
+                <div class="card">
+                    <h3>Agendar Nueva Cita</h3>
+                    <form id="form-cita">
+                        <div class="form-group">
+                            <label for="cita-paciente">Paciente</label>
+                            <input type="text" id="cita-paciente" class="form-control" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="cita-doctor">Doctor</label>
+                            <select id="cita-doctor" class="form-control" required>
+                                <option value="">Seleccione un doctor</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="cita-fecha">Fecha y Hora</label>
+                            <input type="datetime-local" id="cita-fecha" class="form-control" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="cita-motivo">Motivo</label>
+                            <textarea id="cita-motivo" class="form-control" rows="3" required></textarea>
+                        </div>
+                        <div class="form-group">
+                            <label for="cita-estado">Estado</label>
+                            <select id="cita-estado" class="form-control" required>
+                                <option value="pendiente">Pendiente</option>
+                                <option value="confirmada">Confirmada</option>
+                                <option value="completada">Completada</option>
+                                <option value="cancelada">Cancelada</option>
+                            </select>
+                        </div>
+                        <button type="submit" class="btn btn-success">Agendar Cita</button>
+                    </form>
+                </div>
+
+                <div class="card">
+                    <h3>Listado de Citas</h3>
+                    <div class="filters">
+                        <div class="form-group">
+                            <label for="filter-doctor">Filtrar por Doctor</label>
+                            <select id="filter-doctor" class="form-control">
+                                <option value="">Todos los doctores</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="filter-estado">Filtrar por Estado</label>
+                            <select id="filter-estado" class="form-control">
+                                <option value="">Todos los estados</option>
+                                <option value="pendiente">Pendiente</option>
+                                <option value="confirmada">Confirmada</option>
+                                <option value="completada">Completada</option>
+                                <option value="cancelada">Cancelada</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="filter-fecha">Filtrar por Fecha</label>
+                            <input type="date" id="filter-fecha" class="form-control">
+                        </div>
+                    </div>
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Paciente</th>
+                                <th>Doctor</th>
+                                <th>Fecha/Hora</th>
+                                <th>Motivo</th>
+                                <th>Estado</th>
+                                <th>Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tabla-citas">
+                            <!-- Datos de citas se cargarán aquí -->
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
+            <section id="calendario" class="tab-content">
+                <h2 class="section-title">Calendario de Citas</h2>
+                <div class="card">
+                    <div class="calendar-controls">
+                        <button id="btn-prev-week" class="btn">Semana Anterior</button>
+                        <h3 id="current-week" style="display: inline-block; margin: 0 20px;"></h3>
+                        <button id="btn-next-week" class="btn">Siguiente Semana</button>
+                    </div>
+                    <div id="calendar-view" class="calendar">
+                        <!-- Calendario se generará dinámicamente -->
+                    </div>
+                </div>
+            </section>
+        </div>
+    </main>
+
+    <footer>
+        <div class="container">
+            <p>Sistema de Gestión de Citas Médicas &copy; 2023</p>
+        </div>
+    </footer>
+
+    <script>
+        // Clases principales
+        class Doctor {
+            constructor(id, nombre, especialidad, horarios) {
+                this.id = id;
+                this.nombre = nombre;
+                this.especialidad = especialidad;
+                this.horarios = horarios;
+            }
+        }
+
+        class Cita {
+            constructor(id, paciente, doctorId, fecha, motivo, estado) {
+                this.id = id;
+                this.paciente = paciente;
+                this.doctorId = doctorId;
+                this.fecha = fecha;
+                this.motivo = motivo;
+                this.estado = estado;
+            }
+        }
+
+        // Módulo de gestión de datos
+        const DataManager = {
+            STORAGE_KEY: 'medischedule_data',
+
+            init() {
+                if (!localStorage.getItem(this.STORAGE_KEY)) {
+                    const initialData = {
+                        doctores: [
+                            new Doctor(1, "Dr. Juan Pérez", "Cardiología", ["Lunes 8:00-14:00", "Miércoles 15:00-20:00"]),
+                            new Doctor(2, "Dra. María Gómez", "Pediatría", ["Martes 9:00-17:00", "Jueves 9:00-17:00"]),
+                            new Doctor(3, "Dr. Carlos López", "Dermatología", ["Lunes 10:00-18:00", "Viernes 10:00-18:00"])
+                        ],
+                        citas: [
+                            new Cita(1, "Ana Rodríguez", 1, "2023-11-20T10:00", "Control anual", "pendiente"),
+                            new Cita(2, "Luis Martínez", 2, "2023-11-21T11:30", "Consulta general", "confirmada")
+                        ],
+                        nextDoctorId: 4,
+                        nextCitaId: 3
+                    };
+                    this.saveData(initialData);
+                }
+            },
+
+            getData() {
+                return JSON.parse(localStorage.getItem(this.STORAGE_KEY));
+            },
+
+            saveData(data) {
+                localStorage.setItem(this.STORAGE_KEY, JSON.stringify(data));
+            },
+
+            // Métodos para doctores
+            getDoctores() {
+                return this.getData().doctores;
+            },
+
+            addDoctor(doctor) {
+                const data = this.getData();
+                doctor.id = data.nextDoctorId++;
+                data.doctores.push(doctor);
+                this.saveData(data);
+                return doctor;
+            },
+
+            updateDoctor(updatedDoctor) {
+                const data = this.getData();
+                const index = data.doctores.findIndex(d => d.id === updatedDoctor.id);
+                if (index !== -1) {
+                    data.doctores[index] = updatedDoctor;
+                    this.saveData(data);
+                    return true;
+                }
+                return false;
+            },
+
+            deleteDoctor(id) {
+                const data = this.getData();
+                const initialLength = data.doctores.length;
+                data.doctores = data.doctores.filter(d => d.id !== id);
+                if (data.doctores.length < initialLength) {
+                    this.saveData(data);
+                    return true;
+                }
+                return false;
+            },
+
+            // Métodos para citas
+            getCitas() {
+                return this.getData().citas;
+            },
+
+            addCita(cita) {
+                const data = this.getData();
+                cita.id = data.nextCitaId++;
+                data.citas.push(cita);
+                this.saveData(data);
+                return cita;
+            },
+
+            updateCita(updatedCita) {
+                const data = this.getData();
+                const index = data.citas.findIndex(c => c.id === updatedCita.id);
+                if (index !== -1) {
+                    data.citas[index] = updatedCita;
+                    this.saveData(data);
+                    return true;
+                }
+                return false;
+            },
+
+            deleteCita(id) {
+                const data = this.getData();
+                const initialLength = data.citas.length;
+                data.citas = data.citas.filter(c => c.id !== id);
+                if (data.citas.length < initialLength) {
+                    this.saveData(data);
+                    return true;
+                }
+                return false;
+            },
+
+            // Métodos de búsqueda y filtrado
+            searchDoctores(term) {
+                const doctores = this.getDoctores();
+                if (!term) return doctores;
+                return doctores.filter(doctor => 
+                    doctor.nombre.toLowerCase().includes(term.toLowerCase()) || 
+                    doctor.especialidad.toLowerCase().includes(term.toLowerCase())
+                );
+            },
+
+            filterCitas({doctorId, estado, fecha}) {
+                const citas = this.getCitas();
+                return citas.filter(cita => {
+                    let matches = true;
+                    
+                    if (doctorId && cita.doctorId !== parseInt(doctorId)) {
+                        matches = false;
+                    }
+                    
+                    if (estado && cita.estado !== estado) {
+                        matches = false;
+                    }
+                    
+                    if (fecha) {
+                        const citaDate = new Date(cita.fecha).toDateString();
+                        const filterDate = new Date(fecha).toDateString();
+                        if (citaDate !== filterDate) {
+                            matches = false;
+                        }
+                    }
+                    
+                    return matches;
+                });
+            },
+
+            // Métodos para horarios
+            isHorarioDisponible(doctorId, fecha) {
+                const citas = this.getCitas();
+                const citaDateTime = new Date(fecha).getTime();
+                
+                // Verificar si hay citas en el mismo horario
+                const conflicto = citas.some(cita => {
+                    if (cita.doctorId !== doctorId) return false;
+                    
+                    const citaExistenteTime = new Date(cita.fecha).getTime();
+                    const diferencia = Math.abs(citaDateTime - citaExistenteTime);
+                    
+                    // Considerar conflicto si hay menos de 30 minutos de diferencia
+                    return diferencia < 30 * 60 * 1000;
+                });
+                
+                return !conflicto;
+            },
+
+            // Métodos de backup
+            exportData() {
+                return JSON.stringify(this.getData());
+            },
+
+            importData(jsonData) {
+                try {
+                    const data = JSON.parse(jsonData);
+                    this.saveData(data);
+                    return true;
+                } catch (e) {
+                    console.error("Error al importar datos:", e);
+                    return false;
+                }
+            }
+        };
+
+        // Módulo de UI
+        const UI = {
+            currentWeek: new Date(),
+
+            init() {
+                // Inicializar pestañas
+                document.querySelectorAll('[data-tab]').forEach(tab => {
+                    tab.addEventListener('click', (e) => {
+                        e.preventDefault();
+                        const tabId = tab.getAttribute('data-tab');
+                        this.showTab(tabId);
+                    });
+                });
+
+                // Inicializar formulario de doctor
+                document.getElementById('form-doctor').addEventListener('submit', (e) => {
+                    e.preventDefault();
+                    this.handleDoctorFormSubmit();
+                });
+
+                // Botón para agregar horario
+                document.getElementById('btn-agregar-horario').addEventListener('click', () => {
+                    this.addHorarioInput();
+                });
+
+                // Inicializar formulario de cita
+                document.getElementById('form-cita').addEventListener('submit', (e) => {
+                    e.preventDefault();
+                    this.handleCitaFormSubmit();
+                });
+
+                // Filtros de citas
+                document.getElementById('filter-doctor').addEventListener('change', () => {
+                    this.renderCitas();
+                });
+                document.getElementById('filter-estado').addEventListener('change', () => {
+                    this.renderCitas();
+                });
+                document.getElementById('filter-fecha').addEventListener('change', () => {
+                    this.renderCitas();
+                });
+
+                // Búsqueda de doctores
+                document.getElementById('search-doctor').addEventListener('input', () => {
+                    this.renderDoctores();
+                });
+
+                // Navegación del calendario
+                document.getElementById('btn-prev-week').addEventListener('click', () => {
+                    this.navigateWeek(-1);
+                });
+                document.getElementById('btn-next-week').addEventListener('click', () => {
+                    this.navigateWeek(1);
+                });
+
+                // Renderizar datos iniciales
+                this.renderDoctores();
+                this.renderCitas();
+                this.renderCalendario();
+                this.loadDoctorSelects();
+            },
+
+            // Métodos de pestañas
+            showTab(tabId) {
+                // Ocultar todas las pestañas
+                document.querySelectorAll('.tab-content').forEach(content => {
+                    content.classList.remove('active');
+                });
+                
+                // Mostrar la pestaña seleccionada
+                document.getElementById(tabId).classList.add('active');
+                
+                // Actualizar navegación activa
+                document.querySelectorAll('[data-tab]').forEach(tab => {
+                    if (tab.getAttribute('data-tab') === tabId) {
+                        tab.classList.add('active');
+                    } else {
+                        tab.classList.remove('active');
+                    }
+                });
+
+                // Actualizar contenido si es necesario
+                if (tabId === 'calendario') {
+                    this.renderCalendario();
+                }
+            },
+
+            // Métodos para doctores
+            handleDoctorFormSubmit() {
+                const nombre = document.getElementById('doctor-nombre').value;
+                const especialidad = document.getElementById('doctor-especialidad').value;
+                
+                // Obtener horarios
+                const horarioInputs = document.querySelectorAll('.horario-input');
+                const horarios = Array.from(horarioInputs).map(input => input.value);
+                
+                if (!nombre || !especialidad || horarios.length === 0) {
+                    alert('Por favor complete todos los campos');
+                    return;
+                }
+                
+                const doctor = new Doctor(null, nombre, especialidad, horarios);
+                DataManager.addDoctor(doctor);
+                
+                // Limpiar formulario
+                document.getElementById('form-doctor').reset();
+                document.getElementById('horarios-container').innerHTML = '';
+                
+                // Actualizar lista
+                this.renderDoctores();
+                this.loadDoctorSelects();
+                
+                alert('Doctor agregado exitosamente');
+            },
+
+            addHorarioInput() {
+                const container = document.getElementById('horarios-container');
+                const div = document.createElement('div');
+                div.className = 'form-group';
+                div.style.marginTop = '10px';
+                div.innerHTML = `
+                    <input type="text" class="form-control horario-input" placeholder="Ej: Lunes 8:00-14:00" required>
+                    <button type="button" class="btn btn-danger" style="margin-top: 5px; padding: 5px 10px;" onclick="this.parentElement.remove()">Eliminar</button>
+                `;
+                container.appendChild(div);
+            },
+
+            renderDoctores() {
+                const searchTerm = document.getElementById('search-doctor').value;
+                const doctores = DataManager.searchDoctores(searchTerm);
+                const tabla = document.getElementById('tabla-doctores');
+                
+                tabla.innerHTML = doctores.map(doctor => `
+                    <tr>
+                        <td>${doctor.id}</td>
+                        <td>${doctor.nombre}</td>
+                        <td>${doctor.especialidad}</td>
+                        <td>${doctor.horarios.join('<br>')}</td>
+                        <td>
+                            <button class="btn btn-warning" onclick="UI.editDoctor(${doctor.id})">Editar</button>
+                            <button class="btn btn-danger" onclick="UI.deleteDoctor(${doctor.id})">Eliminar</button>
+                        </td>
+                    </tr>
+                `).join('');
+            },
+
+            editDoctor(id) {
+                const doctor = DataManager.getDoctores().find(d => d.id === id);
+                if (!doctor) return;
+                
+                document.getElementById('doctor-nombre').value = doctor.nombre;
+                document.getElementById('doctor-especialidad').value = doctor.especialidad;
+                
+                const container = document.getElementById('horarios-container');
+                container.innerHTML = '';
+                
+                doctor.horarios.forEach(horario => {
+                    const div = document.createElement('div');
+                    div.className = 'form-group';
+                    div.style.marginTop = '10px';
+                    div.innerHTML = `
+                        <input type="text" class="form-control horario-input" value="${horario}" required>
+                        <button type="button" class="btn btn-danger" style="margin-top: 5px; padding: 5px 10px;" onclick="this.parentElement.remove()">Eliminar</button>
+                    `;
+                    container.appendChild(div);
+                });
+                
+                // Scroll al formulario
+                document.getElementById('form-doctor').scrollIntoView({ behavior: 'smooth' });
+            },
+
+            deleteDoctor(id) {
+                if (confirm('¿Está seguro de eliminar este doctor? Esto también eliminará sus citas.')) {
+                    // Eliminar citas asociadas primero
+                    const citas = DataManager.getCitas();
+                    const citasDoctor = citas.filter(c => c.doctorId === id);
+                    
+                    if (citasDoctor.length > 0) {
+                        const data = DataManager.getData();
+                        data.citas = data.citas.filter(c => c.doctorId !== id);
+                        DataManager.saveData(data);
+                    }
+                    
+                    // Eliminar doctor
+                    DataManager.deleteDoctor(id);
+                    this.renderDoctores();
+                    this.renderCitas();
+                    this.loadDoctorSelects();
+                    this.renderCalendario();
+                }
+            },
+
+            // Métodos para citas
+            handleCitaFormSubmit() {
+                const paciente = document.getElementById('cita-paciente').value;
+                const doctorId = parseInt(document.getElementById('cita-doctor').value);
+                const fecha = document.getElementById('cita-fecha').value;
+                const motivo = document.getElementById('cita-motivo').value;
+                const estado = document.getElementById('cita-estado').value;
+                
+                if (!paciente || !doctorId || !fecha || !motivo) {
+                    alert('Por favor complete todos los campos');
+                    return;
+                }
+                
+                // Validar disponibilidad de horario
+                if (!DataManager.isHorarioDisponible(doctorId, fecha)) {
+                    alert('El doctor ya tiene una cita programada en ese horario');
+                    return;
+                }
+                
+                const cita = new Cita(null, paciente, doctorId, fecha, motivo, estado);
+                DataManager.addCita(cita);
+                
+                // Limpiar formulario
+                document.getElementById('form-cita').reset();
+                
+                // Actualizar lista
+                this.renderCitas();
+                this.renderCalendario();
+                
+                alert('Cita agendada exitosamente');
+            },
+
+            renderCitas() {
+                const doctorId = document.getElementById('filter-doctor').value;
+                const estado = document.getElementById('filter-estado').value;
+                const fecha = document.getElementById('filter-fecha').value;
+                
+                const filtros = { doctorId, estado, fecha };
+                const citas = DataManager.filterCitas(filtros);
+                
+                const doctores = DataManager.getDoctores();
+                const tabla = document.getElementById('tabla-citas');
+                
+                tabla.innerHTML = citas.map(cita => {
+                    const doctor = doctores.find(d => d.id === cita.doctorId);
+                    const doctorNombre = doctor ? doctor.nombre : 'Doctor no encontrado';
+                    
+                    const fechaObj = new Date(cita.fecha);
+                    const fechaFormateada = fechaObj.toLocaleDateString('es-ES', {
+                        weekday: 'short',
+                        year: 'numeric',
+                        month: 'short',
+                        day: 'numeric',
+                        hour: '2-digit',
+                        minute: '2-digit'
+                    });
+                    
+                    let badgeClass = '';
+                    switch (cita.estado) {
+                        case 'confirmada': badgeClass = 'badge-success'; break;
+                        case 'pendiente': badgeClass = 'badge-warning'; break;
+                        case 'cancelada': badgeClass = 'badge-danger'; break;
+                        default: badgeClass = '';
+                    }
+                    
+                    return `
+                        <tr>
+                            <td>${cita.id}</td>
+                            <td>${cita.paciente}</td>
+                            <td>${doctorNombre}</td>
+                            <td>${fechaFormateada}</td>
+                            <td>${cita.motivo}</td>
+                            <td><span class="badge ${badgeClass}">${cita.estado}</span></td>
+                            <td>
+                                <button class="btn btn-warning" onclick="UI.editCita(${cita.id})">Editar</button>
+                                <button class="btn btn-danger" onclick="UI.deleteCita(${cita.id})">Eliminar</button>
+                            </td>
+                        </tr>
+                    `;
+                }).join('');
+            },
+
+            editCita(id) {
+                const cita = DataManager.getCitas().find(c => c.id === id);
+                if (!cita) return;
+                
+                document.getElementById('cita-paciente').value = cita.paciente;
+                document.getElementById('cita-doctor').value = cita.doctorId;
+                document.getElementById('cita-fecha').value = cita.fecha.split(':').slice(0, 2).join(':');
+                document.getElementById('cita-motivo').value = cita.motivo;
+                document.getElementById('cita-estado').value = cita.estado;
+                
+                // Scroll al formulario
+                document.getElementById('form-cita').scrollIntoView({ behavior: 'smooth' });
+            },
+
+            deleteCita(id) {
+                if (confirm('¿Está seguro de eliminar esta cita?')) {
+                    DataManager.deleteCita(id);
+                    this.renderCitas();
+                    this.renderCalendario();
+                }
+            },
+
+            // Métodos para selectores de doctores
+            loadDoctorSelects() {
+                const doctores = DataManager.getDoctores();
+                const selectCita = document.getElementById('cita-doctor');
+                const selectFilter = document.getElementById('filter-doctor');
+                
+                // Limpiar opciones excepto la primera
+                while (selectCita.options.length > 1) selectCita.remove(1);
+                while (selectFilter.options.length > 1) selectFilter.remove(1);
+                
+                // Agregar doctores
+                doctores.forEach(doctor => {
+                    const option = document.createElement('option');
+                    option.value = doctor.id;
+                    option.textContent = `${doctor.nombre} (${doctor.especialidad})`;
+                    
+                    selectCita.appendChild(option.cloneNode(true));
+                    selectFilter.appendChild(option.cloneNode(true));
+                });
+            },
+
+            // Métodos para el calendario
+            renderCalendario() {
+                const startDate = new Date(this.currentWeek);
+                startDate.setDate(startDate.getDate() - startDate.getDay() + 1); // Lunes de esta semana
+                
+                const endDate = new Date(startDate);
+                endDate.setDate(endDate.getDate() + 6); // Domingo de esta semana
+                
+                // Actualizar título de la semana
+                const options = { year: 'numeric', month: 'long', day: 'numeric' };
+                document.getElementById('current-week').textContent = 
+                    `Semana del ${startDate.toLocaleDateString('es-ES', options)} al ${endDate.toLocaleDateString('es-ES', options)}`;
+                
+                const calendar = document.getElementById('calendar-view');
+                calendar.innerHTML = '';
+                
+                // Encabezados de días
+                const days = ['Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado', 'Domingo'];
+                days.forEach(day => {
+                    const header = document.createElement('div');
+                    header.className = 'calendar-header';
+                    header.textContent = day;
+                    calendar.appendChild(header);
+                });
+                
+                // Celdas de días
+                const currentDate = new Date(startDate);
+                for (let i = 0; i < 7; i++) {
+                    const dayCell = document.createElement('div');
+                    dayCell.className = 'calendar-day';
+                    
+                    const dayNumber = document.createElement('div');
+                    dayNumber.className = 'calendar-day-number';
+                    dayNumber.textContent = currentDate.getDate();
+                    dayCell.appendChild(dayNumber);
+                    
+                    // Obtener citas para este día
+                    const citas = DataManager.getCitas().filter(cita => {
+                        const citaDate = new Date(cita.fecha);
+                        return citaDate.toDateString() === currentDate.toDateString();
+                    });
+                    
+                    // Ordenar citas por hora
+                    citas.sort((a, b) => new Date(a.fecha) - new Date(b.fecha));
+                    
+                    // Mostrar citas
+                    citas.forEach(cita => {
+                        const doctor = DataManager.getDoctores().find(d => d.id === cita.doctorId);
+                        const doctorName = doctor ? doctor.nombre.split(' ')[0] : '';
+                        
+                        const citaTime = new Date(cita.fecha).toLocaleTimeString('es-ES', {
+                            hour: '2-digit',
+                            minute: '2-digit'
+                        });
+                        
+                        const appointment = document.createElement('div');
+                        appointment.className = 'appointment';
+                        appointment.style.backgroundColor = this.getColorForDoctor(cita.doctorId);
+                        appointment.title = `${cita.paciente} - ${doctorName} - ${cita.motivo}`;
+                        appointment.textContent = `${citaTime} ${cita.paciente.split(' ')[0]}`;
+                        
+                        appointment.addEventListener('click', () => {
+                            this.editCita(cita.id);
+                        });
+                        
+                        dayCell.appendChild(appointment);
+                    });
+                    
+                    calendar.appendChild(dayCell);
+                    currentDate.setDate(currentDate.getDate() + 1);
+                }
+            },
+
+            getColorForDoctor(doctorId) {
+                const colors = [
+                    '#2b6cb0', '#4299e1', '#38a169', '#dd6b20', 
+                    '#e53e3e', '#805ad5', '#d53f8c', '#f6ad55',
+                    '#68d391', '#0bc5ea'
+                ];
+                return colors[doctorId % colors.length];
+            },
+
+            navigateWeek(weeks) {
+                this.currentWeek.setDate(this.currentWeek.getDate() + weeks * 7);
+                this.renderCalendario();
+            },
+
+            // Métodos de utilidad
+            formatDate(date) {
+                return date.toISOString().split('T')[0];
+            }
+        };
+
+        // Inicialización
+        document.addEventListener('DOMContentLoaded', () => {
+            DataManager.init();
+            UI.init();
+        });
+    </script>
+</body>
+</html>
